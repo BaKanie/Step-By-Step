@@ -32,3 +32,6 @@
 - 프로젝트 주제 및 개발 범위 확정
 - GitHub 저장소 생성
 - 프로젝트 제안서 작성 및 제출
+### 11월 16일
+-구현내용: main.c 파일 생성, 문자 배열을 사용해 할 일 제목 저장, fgets로 띄어쓰기 포함한 할일제목 입력, printf로 입력한 제목 출력
+-실행확인: 'Programming homework'를 입력했을 때 'Ready to do: Programming homework'가 출력되는 것을 확인
