@@ -3,6 +3,7 @@
 #include <time.h>
 
 #define MAX_TASKS 5  // 최대 등록 개수
+#define DATA_FILE "todo.dat" // 할 일 저장 파일 이름
 
 // 할 일 하나의 정보 모음 구조체
 struct Task {
@@ -221,7 +222,7 @@ int deleteExpired(struct Task todo[], int count, time_t now)
     return remaining;
 }
 
-//등록된 할 일 전체 출력 함수
+// 등록된 할 일 전체 출력 함수
 // todo: 출력할 할 일 배열, count: 등록 개수
 void printTasks(const struct Task todo[], int count)
 {
@@ -238,11 +239,93 @@ void printTasks(const struct Task todo[], int count)
     }
 }
 
-// 프로그램 시작 함수
+// 할 일 저장 함수
+// todo: 저장할 배열, count 실제 등록 개수
+// 성공하면 1, 실패하면 0 반환
+int saveTasks(const struct Task todo[], int count)
+{
+    FILE *file = fopen(DATA_FILE, "wb"); //이진 파일 쓰기
+
+    if (file == NULL) {
+        printf("(ERROR) Could not open the save file.\n");
+        return 0;
+    }
+
+    // 개수를 저장한 다음 배열 전체를 한 묶음으로 저장
+    if (fwrite(&count, sizeof(count), 1, file) != 1 ||
+        fwrite(todo, sizeof(struct Task) *MAX_TASKS, 1, file) != 1) {
+        printf("(ERROR) Could not save tasks. \n");
+        fclose(file);
+        return 0;
+        }
+
+        if (fclose(file) != 0) {
+            printf("(ERROR) Could not finish saving.\n");
+            return 0;
+        }
+
+        printf("Saved %d task(s).\n", count);
+        return 1;
+}
+
+// 파일 불러오기 함수
+// todo: 복원할 배열, count: 등록개수를 저장할 주소
+// 성공하면 1, 실패하거나 파일이 없으면 0 반환
+int loadTasks(struct Task todo[], int *count)
+{
+    FILE *file = fopen(DATA_FILE, "rb"); // 이진 파일 읽기
+
+    if (file == NULL) {
+        printf("Could not open a saved file. \n");
+
+        // 파일이 없는 첫 실행인지 다른 오류인지는 구분하지 않는다
+        // 빈 목록으로 시작할지 사용자에게 확인
+        return askYesNo("Start a new list?") == 1;
+    }
+
+    int savedCount = 0; // 파일에 저장된 등록 개수
+    struct Task loaded[MAX_TASKS] = {0}; // 읽은 내용을 임시 보관
+
+    // 저장할 때와 같은 순서와 크기로 읽기
+    if (fread(&savedCount, sizeof(savedCount), 1, file) != 1 ||
+    savedCount < 0 || savedCount > MAX_TASKS ||
+    fread(loaded, sizeof(loaded), 1, file) != 1) {
+    printf("(ERROR) Could not read saved tasks.\n");
+    fclose(file);
+    return 0;
+    }
+
+    fclose(file);
+
+    for (int i = 0; i < savedCount; i++) { //복원할 항목 위치
+        todo[i] = loaded[i];
+    }
+
+    *count = savedCount;
+    printf("Loaded %d task(s).\n", *count);
+    return 1;
+}
+
+// 프로그램 메인 함수
 int main(void)
 {
     struct Task todo[MAX_TASKS] = {0}; // 최대 5개의 할 일 저장 공간
     int count = 0;                    // 실제 등록 개수
+
+    if (!loadTasks(todo, &count)) {
+        return 1;
+    }
+
+    sortTasks(todo, count);
+    printTasks(todo, count);
+
+    if (count > 0) {
+        int answer = askYesNo("Add another task?"); // 추가 등록 응답
+
+        if (answer != 1) {
+            return 0;
+        }
+    }
 
     while (1) {
         // 저장 공간이 가득 차면 마감 항목 삭제 여부 확인
@@ -293,6 +376,10 @@ int main(void)
         if (answer != 1) {
             break;
         }
+    }
+
+        if (!saveTasks(todo, count)) {
+        return 1;
     }
 
     printf("\nRegistration ended.\n");
