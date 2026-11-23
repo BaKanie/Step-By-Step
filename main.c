@@ -385,3 +385,16 @@ int main(void)
     printf("\nRegistration ended.\n");
     return 0;
 }
+
+
+/*포인트1
+정보를 한 묶음으로 관리: struct Task, todo[MAX_TASKS]
+구조체로 할 일 정보를 묶고 배열로 최대 5개를 관리한다. count는 실제 등록 개수다.*/
+
+/*포인트2
+정렬 시 정보 유지: struct Task temp = todo[i];부터 교환 부분
+제목만 교환하지 않고 구조체 전체를 교환하므로 마감과 Step도 함께 이동한다*/
+
+/*포인트3
+종료 후 기록 복원: fwrite의 'fread'부분
+등록 개수와 배열을 같은 순서, 같은 크기로 저장하고 읽어 복원한다.*/
