@@ -83,3 +83,29 @@
   - Y 선택 시 작성 중인 할 일을 버리고 프로그램 종료
   - 기존에 등록·저장한 할 일은 유지
   - N 선택 시 종료를 취소하고 현재 입력 항목을 다시 요청
+
+## 설치 및 실행 방법 — Windows
+
+### 준비
+1. Visual Studio Code와 Microsoft의 C/C++ 확장을 설치합니다.
+2. MSYS2의 UCRT64 GCC 컴파일러를 설치합니다.
+   이 프로젝트의 테스트 환경은 C:\msys64\ucrt64\bin\gcc.exe입니다.
+3. GitHub 저장소에서 Code → Download ZIP을 누르고 압축을 풉니다.
+4. VS Code에서 파일 → 폴더 열기로 main.c가 있는 폴더를 엽니다.
+
+### 빌드 및 실행
+1. 터미널 → 새 터미널을 선택합니다.
+2. main.c가 있는 폴더에서 다음 명령으로 빌드합니다.
+```powershell
+& "C:\msys64\ucrt64\bin\gcc.exe" -Wall -Wextra main.c -o main.exe
+```
+3. 오류 없이 빌드되면 다음 명령으로 실행합니다.
+```powershell
+.\main.exe
+```
+4. 화면 안내에 따라 제목, 마감, Step을 입력합니다.
+5. 추가 등록 질문에 NO를 입력하면 파일에 저장하고 종료합니다.
+6. 같은 폴더에서 다시 실행하면 저장 내용을 불러옵니다.
+
+### 저장 파일
+todo.dat는 실행 작업 폴더에 자동 생성됩니다.
